@@ -40,13 +40,14 @@ Before responding to the user with "done", ALWAYS:
   - Use conversational particles: "Ok,", "Alright,", "Done,", etc.
   - Present tense or casual past: "is ready", "is set up", "is gone" vs formal "created", "removed"
   - Describe what was accomplished overall, not individual actions
-  - Should NOT duplicate any of the changes array items
+  - Should NOT duplicate any of the changes/notes array items
   - Good: "Ok, the project foundation is set up"
   - Good: "The old test file is gone"
   - Good: "I built a hello world application"
   - Bad: "Created a hello world script" (too formal)
   - Bad: "Created a hello world script" (if changes also say "created...")
-- `changes` (array): Specific actions YOU took to achieve the tldr, in first person ("I...")
+- `changes` (array): **ONLY for code modifications** - Specific actions YOU took to modify code, in first person ("I...")
+  - Use this when you CREATE, UPDATE, DELETE, or MODIFY files
   - Always start with "I" to take credit for your work
   - Be conversational and avoid technical jargon
   - Describe the action, not the file
@@ -57,6 +58,24 @@ Before responding to the user with "done", ALWAYS:
   - Bad: "hello_world.py: deleted"
   - Bad: "Updated config.json"
   - Bad: "Added print statement to hello.py"
+- `notes` (array): **ONLY for analysis/findings** - Factual observations about what you DISCOVERED, not what you did
+  - Use this when analyzing code, explaining how something works, or documenting findings
+  - State WHAT you found, not THAT you looked
+  - Be specific and factual
+  - **KEEP IT SHORT: Aim for 2-3 key findings, MAX 4** - These will be read aloud
+  - If you include more than 4 notes, only the first 3 will be read aloud, followed by "There are X more important things that need further investigation"
+  - If there are many findings, pick the TOP 3-4 MOST IMPORTANT ones
+  - Prioritize architectural decisions, security concerns, and critical patterns over minor details
+  - NO meta-commentary like "I analyzed...", "I reviewed...", "I identified..."
+  - Good: "Uses Tailwind CSS utility classes for styling"
+  - Good: "Authentication handled via JWT tokens with 24-hour expiration"
+  - Good: "Database connection uses connection pooling with max 10 connections"
+  - Good: "The Inter font family is used with system font fallbacks"
+  - Good (4th note when there's more): "Several other configuration details worth investigating"
+  - Bad: "I analyzed the Tailwind integration" (meta, not factual)
+  - Bad: "I reviewed the authentication logic" (meta, not factual)
+  - Bad: "I identified the database settings" (meta, not factual)
+  - Bad: Including 8+ findings (too many for voice readout)
 - `risks` (array): Potential issues or caveats in natural language (empty array if none)
 - `next_questions` (array): Follow-up questions for the user (empty array if none)
 - `apply_safe` (boolean): `true` if changes are safe to auto-apply without review
@@ -114,6 +133,21 @@ Example 3 - Bug fix:
 }
 ```
 
+Example 4 - Code analysis (use "notes", not "changes"):
+```python
+{
+  tldr: "Here's what I found in the globals CSS file",
+  changes: [],
+  notes: [
+    "Uses Tailwind directives for base, components, and utilities layers",
+    "Defines CSS variables for light color scheme with Inter font",
+    "Minimal custom styling, relies primarily on Tailwind utilities"
+  ],
+  risks: [],
+  next_questions: ["Would you like me to add custom CSS variables or theme tokens?"]
+}
+```
+
 **More Conversational TLDR Ideas:**
 - "Done, the database is migrated"
 - "Everything's deployed to production"
@@ -129,6 +163,7 @@ If the `jarvis-voice-summary` MCP server is not found, output the same data as a
 {
   "tldr": "your summary here",
   "changes": ["file: action"],
+  "notes": ["factual observation"],
   "risks": [],
   "next_questions": [],
   "apply_safe": true
